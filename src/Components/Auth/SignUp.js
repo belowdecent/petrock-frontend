@@ -1,5 +1,5 @@
-import axios from "axios";
-import React from "react";
+import axios from 'axios';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import Avatar from '@mui/material/Avatar';
@@ -16,30 +16,33 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 const theme = createTheme();
 
 export default function SignUp(props) {
-  const {setIsLoggedIn} = props;
+  const { setIsLoggedIn } = props;
   const [errorMessage, setErrorMessage] = React.useState('');
-	let navigate = useNavigate();
+  let navigate = useNavigate();
 
-	const handleSubmit = async (event) => {
-		event.preventDefault();
-		const formData = new FormData(event.currentTarget);
-		const form = {
-			email: formData.get('email'),
-			password: formData.get('password')
-		};
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const form = {
+      email: formData.get('email'),
+      password: formData.get('password'),
+    };
 
-		const {data} = await axios.post("http://localhost:3333/auth/signup", form);
-		console.log('nice');
-		if (data.status === parseInt('403')) { 
-			setErrorMessage(data.response);
-		} else { 
-			localStorage.setItem('token', data.access_token);
-			setIsLoggedIn(true);
-		}
-		navigate('/')
-	};
+    const { data } = await axios.post(
+      'http://localhost:3333/auth/signup',
+      form,
+    );
+    console.log('nice');
+    if (data.status === parseInt('403')) {
+      setErrorMessage(data.response);
+    } else {
+      localStorage.setItem('token', data.access_token);
+      setIsLoggedIn(true);
+    }
+    navigate('/');
+  };
 
-	return (
+  return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
@@ -51,13 +54,16 @@ export default function SignUp(props) {
             alignItems: 'center',
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-
-          </Avatar>
+          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}></Avatar>
           <Typography component="h1" variant="h5">
             Sign up
           </Typography>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          <Box
+            component="form"
+            onSubmit={handleSubmit}
+            noValidate
+            sx={{ mt: 1 }}
+          >
             <TextField
               margin="normal"
               required
@@ -103,7 +109,6 @@ export default function SignUp(props) {
             </Grid>
           </Box>
         </Box>
-
       </Container>
     </ThemeProvider>
   );

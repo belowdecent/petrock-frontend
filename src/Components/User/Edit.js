@@ -15,27 +15,63 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 const theme = createTheme();
 
-export default function Login(props) {
-  const { setIsLoggedIn } = props;
+export default function Edit(props) {
+  const { setLoggedIn } = props;
   const [errorMessage, setErrorMessage] = React.useState('');
   let navigate = useNavigate();
+
+  const [some, setSome] = React.useState([]);
+
+  React.useEffect(() => {
+    async function fetchData() {
+      try {
+        const token = localStorage.getItem('token');
+        console.log(token);
+
+        const { data } = await axios.get('http://localhost:3333/users/me', {
+          headers: {
+            Authorization: 'Bearer ' + token,
+          },
+        });
+
+        setSome(data);
+        console.log(data);
+      } catch {
+        setLoggedIn(false);
+        navigate('/');
+      }
+    }
+    fetchData();
+  }, [navigate, setLoggedIn]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const form = {
       email: formData.get('email'),
-      password: formData.get('password'),
+      firstName: formData.get('firstName'),
+      lastName: formData.get('lastName'),
     };
 
-    const { data } = await axios.post('http://localhost:3333/auth/login', form);
-    console.log('nice');
-    if (data.status === parseInt('403')) {
+    if (!form.email) delete form.email;
+
+    const token = localStorage.getItem('token');
+    const { data } = await axios.patch('http://localhost:3333/users', 
+      form, {
+        headers: { 
+          Authorization: 'Bearer ' + token,
+        }
+      } 
+    );
+
+    console.log(data);
+
+    if (data.status !== parseInt('200')) {
       setErrorMessage(data.response);
     } else {
-      localStorage.setItem('token', data.access_token);
-      setIsLoggedIn(true);
+      setLoggedIn(false);
     }
+
     navigate('/');
   };
 
@@ -63,7 +99,6 @@ export default function Login(props) {
           >
             <TextField
               margin="normal"
-              required
               fullWidth
               id="email"
               label="Email Address"
@@ -73,13 +108,19 @@ export default function Login(props) {
             />
             <TextField
               margin="normal"
-              required
               fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-              autoComplete="current-password"
+              id="firstName"
+              label="First name"
+              name="firstName"
+              autoFocus
+            />
+            <TextField
+              margin="normal"
+              fullWidth
+              id="lastName"
+              label="Last name"
+              name="lastName"
+              autoFocus
             />
             <Typography component="p" variant="p" color="red">
               {errorMessage}
@@ -90,7 +131,7 @@ export default function Login(props) {
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >
-              Sign In
+              Update
             </Button>
             <Grid container>
               <Grid item xs>
