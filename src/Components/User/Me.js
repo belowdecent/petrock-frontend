@@ -9,7 +9,8 @@ const theme = createTheme();
 
 export default function Me(props) {
   const { setLoggedIn } = props;
-  const [some, setSome] = React.useState([]);
+  const [user, setUser] = React.useState([]);
+  const [pets, setPets] = React.useState([]);
   let navigate = useNavigate();
 
   React.useEffect(() => {
@@ -23,26 +24,55 @@ export default function Me(props) {
           },
         });
 
-        setSome(data);
+        setUser(data);
       } catch {
         setLoggedIn(false);
         navigate('/');
       }
     }
     fetchData();
+
+    async function fetchPetRocks() {
+      try {
+        const token = localStorage.getItem('token');
+
+        const { data } = await axios.get('http://localhost:3333/pets', {
+          headers: {
+            Authorization: 'Bearer ' + token,
+          },
+        });
+
+        setPets(data);
+      } catch {
+        setLoggedIn(false);
+        navigate('/');
+      }
+    }
+    fetchPetRocks();
   }, [navigate, setLoggedIn]);
 
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
-        {some.id}
+        {user.id}
         <br />
-        {some.email}
+        {user.email}
         <br />
-        {some.firstName}
+        {user.firstName}
         <br />
-        {some.lastName}
+        {user.lastName}
+        <br />
         <Link to={`/edit`}>Edit</Link>
+        {pets.map((pet) => {
+          return (
+            <div>
+              {pet.name}, a {pet.color} rock
+              <br />
+              <Link to={`pet/id`}>ponder</Link>
+            </div>
+          );
+        })}
+        <Link to={`/new-pet-rock`}>New pet rock</Link>
       </Container>
     </ThemeProvider>
   );

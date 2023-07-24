@@ -15,61 +15,33 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 const theme = createTheme();
 
-export default function Edit(props) {
+export default function NewPetRock(props) {
   const { setLoggedIn } = props;
+
   const [errorMessage, setErrorMessage] = React.useState('');
   let navigate = useNavigate();
-
-  const [some, setSome] = React.useState([]);
-
-  React.useEffect(() => {
-    async function fetchData() {
-      try {
-        const token = localStorage.getItem('token');
-        console.log(token);
-
-        const { data } = await axios.get('http://localhost:3333/users/me', {
-          headers: {
-            Authorization: 'Bearer ' + token,
-          },
-        });
-
-        setSome(data);
-        console.log(data);
-      } catch {
-        setLoggedIn(false);
-        navigate('/');
-      }
-    }
-    fetchData();
-  }, [navigate, setLoggedIn]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const form = {
-      email: formData.get('email'),
-      firstName: formData.get('firstName'),
-      lastName: formData.get('lastName'),
+      name: formData.get('name'),
+      color: formData.get('color'),
     };
 
-    if (!form.email) delete form.email;
-
     const token = localStorage.getItem('token');
-    const { data } = await axios.patch('http://localhost:3333/users', form, {
+    const { data } = await axios.post('http://localhost:3333/pets', form, {
       headers: {
         Authorization: 'Bearer ' + token,
       },
     });
 
-    console.log(data);
-
-    if (data.status !== parseInt('200')) {
+    if (data.status === parseInt('401')) {
       setErrorMessage(data.response);
-    } else {
       setLoggedIn(false);
+    } else {
+      setLoggedIn(true);
     }
-
     navigate('/');
   };
 
@@ -97,28 +69,20 @@ export default function Edit(props) {
           >
             <TextField
               margin="normal"
+              required
               fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              autoComplete="email"
+              id="name"
+              label="Pet Name"
+              name="name"
               autoFocus
             />
             <TextField
               margin="normal"
+              required
               fullWidth
-              id="firstName"
-              label="First name"
-              name="firstName"
-              autoFocus
-            />
-            <TextField
-              margin="normal"
-              fullWidth
-              id="lastName"
-              label="Last name"
-              name="lastName"
-              autoFocus
+              name="color"
+              label="Pet Color"
+              id="color"
             />
             <Typography component="p" variant="p" color="red">
               {errorMessage}
@@ -129,20 +93,8 @@ export default function Edit(props) {
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >
-              Update
+              Sign In
             </Button>
-            <Grid container>
-              <Grid item xs>
-                <Link href="/Signup" variant="body2">
-                  Forgot password?
-                </Link>
-              </Grid>
-              <Grid item>
-                <Link href="SignUp" variant="body2">
-                  {"Don't have an account? Sign Up"}
-                </Link>
-              </Grid>
-            </Grid>
           </Box>
         </Box>
       </Container>

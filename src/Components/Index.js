@@ -3,6 +3,7 @@ import SignUp from './Auth/SignUp';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Me from './User/Me';
 import Edit from './User/Edit';
+import NewPetRock from './PetRock/NewPetRock';
 
 export default function Index(props) {
   const { isLoggedIn, setLoggedIn } = props;
@@ -12,6 +13,10 @@ export default function Index(props) {
         {isLoggedIn ? (
           <Routes>
             <Route path="/" element={<Me setLoggedIn={setLoggedIn} />}></Route>
+            <Route
+              path="/new-pet-rock"
+              element={<NewPetRock setLoggedIn={setLoggedIn} />}
+            ></Route>
             <Route
               path="/edit"
               element={<Edit setLoggedIn={setLoggedIn} />}
