@@ -51,6 +51,10 @@ export default function Me(props) {
     fetchPetRocks();
   }, [navigate, setLoggedIn]);
 
+  const logOut = () => {
+    setLoggedIn(false);
+    navigate('/');
+  }
 
   const killRock = (id) => {
     return async (event) => {
@@ -71,26 +75,21 @@ export default function Me(props) {
 
       setPets(data);
     };
+
   }
 
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
-        {user.id}
-        <br />
         {user.email}
         <br />
-        {user.firstName}
+        {`${user.firstName} ${user.lastName}`}
         <br />
-        {user.lastName}
-        <br />
-        <Link to={`/edit`}>Edit</Link>
+        <Link to={`/edit`}>Edit User</Link>
         {pets.map((pet) => {
           return (
             <div>
               {pet.name}, a {pet.color} rock
-              <br />
-              <Link to={`pet/${pet.id}`}>ponder</Link>
               <br />
               <Link to={`pet/${pet.id}/edit`}>edit</Link>
               <br />
@@ -98,7 +97,10 @@ export default function Me(props) {
             </div>
           );
         })}
+        <br/>
         <Link to={`/new-pet-rock`}>New pet rock</Link>
+        <br/>
+        <button onClick={logOut}>Log out</button>
       </Container>
     </ThemeProvider>
   );

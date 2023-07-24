@@ -21,24 +21,22 @@ export default function Login(props) {
   let navigate = useNavigate();
 
   const handleSubmit = async (event) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const form = {
-      email: formData.get('email'),
-      password: formData.get('password'),
-    };
+    try {
+      event.preventDefault();
+      const formData = new FormData(event.currentTarget);
+      const form = {
+        email: formData.get('email'),
+        password: formData.get('password'),
+      };
 
-    const { data } = await axios.post('http://localhost:3333/auth/login', form);
-    console.log('nice');
-    if (data.status === parseInt('403')) {
-      setErrorMessage(data.response);
-    } else {
+      const { data } = await axios.post('http://localhost:3333/auth/login', form);
       localStorage.setItem('token', data.access_token);
       setIsLoggedIn(true);
+      navigate('/');
+    } catch {
+      setErrorMessage("Bad credentials");
     }
-    navigate('/');
   };
-
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">

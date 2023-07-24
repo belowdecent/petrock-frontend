@@ -6,8 +6,6 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import Link from '@mui/material/Link';
-import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
@@ -20,57 +18,30 @@ export default function Edit(props) {
   const [errorMessage, setErrorMessage] = React.useState('');
   let navigate = useNavigate();
 
-  const [some, setSome] = React.useState([]);
-
-  React.useEffect(() => {
-    async function fetchData() {
-      try {
-        const token = localStorage.getItem('token');
-        console.log(token);
-
-        const { data } = await axios.get('http://localhost:3333/users/me', {
-          headers: {
-            Authorization: 'Bearer ' + token,
-          },
-        });
-
-        setSome(data);
-        console.log(data);
-      } catch {
-        setLoggedIn(false);
-        navigate('/');
-      }
-    }
-    fetchData();
-  }, [navigate, setLoggedIn]);
-
   const handleSubmit = async (event) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const form = {
-      email: formData.get('email'),
-      firstName: formData.get('firstName'),
-      lastName: formData.get('lastName'),
-    };
+    try {
+      event.preventDefault();
+      const formData = new FormData(event.currentTarget);
+      const form = {
+        email: formData.get('email'),
+        firstName: formData.get('firstName'),
+        lastName: formData.get('lastName'),
+      };
 
-    if (!form.email) delete form.email;
+      if (!form.email) delete form.email;
 
-    const token = localStorage.getItem('token');
-    const { data } = await axios.patch('http://localhost:3333/users', form, {
-      headers: {
-        Authorization: 'Bearer ' + token,
-      },
-    });
+      const token = localStorage.getItem('token');
+      await axios.patch('http://localhost:3333/users', form, {
+        headers: {
+          Authorization: 'Bearer ' + token,
+        },
+      });
 
-    console.log(data);
-
-    if (data.status !== parseInt('200')) {
-      setErrorMessage(data.response);
-    } else {
+      navigate('/');
+    } catch {
+      setErrorMessage("Session timeout");
       setLoggedIn(false);
     }
-
-    navigate('/');
   };
 
   return (
@@ -87,7 +58,7 @@ export default function Edit(props) {
         >
           <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}></Avatar>
           <Typography component="h1" variant="h5">
-            Sign in
+            Edit profile
           </Typography>
           <Box
             component="form"
@@ -131,18 +102,6 @@ export default function Edit(props) {
             >
               Update
             </Button>
-            <Grid container>
-              <Grid item xs>
-                <Link href="/Signup" variant="body2">
-                  Forgot password?
-                </Link>
-              </Grid>
-              <Grid item>
-                <Link href="SignUp" variant="body2">
-                  {"Don't have an account? Sign Up"}
-                </Link>
-              </Grid>
-            </Grid>
           </Box>
         </Box>
       </Container>
