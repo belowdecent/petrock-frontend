@@ -51,6 +51,28 @@ export default function Me(props) {
     fetchPetRocks();
   }, [navigate, setLoggedIn]);
 
+
+  const killRock = (id) => {
+    return async (event) => {
+      event.preventDefault();
+      const token = localStorage.getItem('token');
+
+      await axios.delete(`http://localhost:3333/pets/${id}`, {
+        headers: {
+          Authorization: 'Bearer ' + token,
+        },
+      });
+
+      const { data } = await axios.get('http://localhost:3333/pets', {
+        headers: {
+          Authorization: 'Bearer ' + token,
+        },
+      });
+
+      setPets(data);
+    };
+  }
+
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
@@ -68,7 +90,11 @@ export default function Me(props) {
             <div>
               {pet.name}, a {pet.color} rock
               <br />
-              <Link to={`pet/id`}>ponder</Link>
+              <Link to={`pet/${pet.id}`}>ponder</Link>
+              <br />
+              <Link to={`pet/${pet.id}/edit`}>edit</Link>
+              <br />
+              <button onClick={killRock(pet.id)}>Kill rock</button>
             </div>
           );
         })}
